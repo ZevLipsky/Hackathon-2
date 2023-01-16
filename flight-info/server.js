@@ -46,8 +46,7 @@ app.get("/users/register", checkAuthenticated, (req, res) => {
 });
 
 app.get("/users/login", checkAuthenticated, (req, res) => {
-  // flash sets a messages variable. passport sets the error message
-  // console.log(req.session.flash.error);
+
   res.render("login.ejs");
 });
 
@@ -56,9 +55,13 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
   res.render("dashboard", { user: req.user.name });
 });
 
-app.get("/users/logout", (req, res) => {
-  req.logout();
-  res.render("index", { message: "You have logged out successfully" });
+
+app.get("/users/logout", function(req, res, next){
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    req.flash("succes_msg", "Logged out succesfully.");
+    res.redirect("login");
+  });
 });
 
 app.post("/users/register", async (req, res) => {
@@ -109,7 +112,7 @@ app.post("/users/register", async (req, res) => {
           pool.query(
             `INSERT INTO users (name, email, password)
                 VALUES ($1, $2, $3)
-                RETURNING id, password`,
+                RETURNING user_id, password`,
             [name, email, hashedPassword],
             (err, results) => {
               if (err) {

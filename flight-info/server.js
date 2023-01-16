@@ -17,23 +17,17 @@ initializePassport(passport);
 
 // Middleware
 
-// Parses details from a form
 app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
 
 app.use(
   session({
-    // Key we want to keep secret which will encrypt all of our information
     secret: 'secret',
-    // Should we resave our session variables if nothing has changes which we dont
     resave: false,
-    // Save empty value if there is no vaue which we do not want to do
     saveUninitialized: false
   })
 );
-// Funtion inside passport which initializes passport
 app.use(passport.initialize());
-// Store our variables to be persisted across the whole session. Works with app.use(Session) above
 app.use(passport.session());
 app.use(flash());
 

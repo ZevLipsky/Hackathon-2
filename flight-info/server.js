@@ -7,7 +7,6 @@ const session = require("express-session");
 const app = express();
 const dotenv = require('dotenv');
 const path = require('path')
-// const axios = require('axios').default
 const cors = require('cors')
 const bodyParser = require('body-parser');
 const request = require('request');
@@ -69,39 +68,6 @@ app.get("/users/logout", function(req, res, next){
   });
 });
 
-// app.get('/users/weather', (req,res)=>{
-// res.render("weather")
-// const options = {
-//   method: 'GET',
-//   url: 'https://timetable-lookup.p.rapidapi.com/TimeTable/TLV/JFK/20230111/',
-//   headers: {
-//     'X-RapidAPI-Key': '67e868eb2cmsh21fcf280677216ep1dccb8jsn310cfb390da6',
-//     'X-RapidAPI-Host': 'timetable-lookup.p.rapidapi.com'
-//   }
-// };
-
-// axios.request(options).then(function (response) {
-// 	// console.log(response.data);
-//   res.json(response.data)
-// }).catch(function (error) {
-// 	console.error(error);
-// });
-
-// const options = {
-//   method: 'GET',
-//   url: 'https://toronto-pearson-airport.p.rapidapi.com/departures',
-//   headers: {
-//     'X-RapidAPI-Key': '5127a15d4fmsh9cb7260dda4ab4ep123dabjsn3bfa98aad9c4',
-//     'X-RapidAPI-Host': 'toronto-pearson-airport.p.rapidapi.com'
-//   }
-// };
-
-// axios.request(options).then(function (response) {
-// 	console.log(response.data);
-//   res.json(response.data)
-// }).catch(function (error) {
-// 	console.error(error);
-// });
 
 app.post("/users/register", async (req, res) => {
   let { name, email, password, password2 } = req.body;

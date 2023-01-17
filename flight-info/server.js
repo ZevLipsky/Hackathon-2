@@ -6,10 +6,17 @@ const flash = require("express-flash");
 const session = require("express-session");
 const app = express();
 const dotenv = require('dotenv');
+const path = require('path')
+// const axios = require('axios').default
+const cors = require('cors')
+const bodyParser = require('body-parser');
+const request = require('request');
 
 
 dotenv.config();
 const port = process.env.PORT
+const apiKey = process.env.API_KEY
+app.use(cors())
 
 const initializePassport = require("./passportConfig");
 
@@ -17,8 +24,12 @@ initializePassport(passport);
 
 // Middleware
 
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.urlencoded({ extended: false }));
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
   session({
@@ -57,6 +68,40 @@ app.get("/users/logout", function(req, res, next){
     res.redirect("login");
   });
 });
+
+// app.get('/users/weather', (req,res)=>{
+// res.render("weather")
+// const options = {
+//   method: 'GET',
+//   url: 'https://timetable-lookup.p.rapidapi.com/TimeTable/TLV/JFK/20230111/',
+//   headers: {
+//     'X-RapidAPI-Key': '67e868eb2cmsh21fcf280677216ep1dccb8jsn310cfb390da6',
+//     'X-RapidAPI-Host': 'timetable-lookup.p.rapidapi.com'
+//   }
+// };
+
+// axios.request(options).then(function (response) {
+// 	// console.log(response.data);
+//   res.json(response.data)
+// }).catch(function (error) {
+// 	console.error(error);
+// });
+
+// const options = {
+//   method: 'GET',
+//   url: 'https://toronto-pearson-airport.p.rapidapi.com/departures',
+//   headers: {
+//     'X-RapidAPI-Key': '5127a15d4fmsh9cb7260dda4ab4ep123dabjsn3bfa98aad9c4',
+//     'X-RapidAPI-Host': 'toronto-pearson-airport.p.rapidapi.com'
+//   }
+// };
+
+// axios.request(options).then(function (response) {
+// 	console.log(response.data);
+//   res.json(response.data)
+// }).catch(function (error) {
+// 	console.error(error);
+// });
 
 app.post("/users/register", async (req, res) => {
   let { name, email, password, password2 } = req.body;
@@ -126,15 +171,47 @@ app.post("/users/register", async (req, res) => {
 app.post(
   "/users/login",
   passport.authenticate("local", {
-    successRedirect: "/users/dashboard",
+    successRedirect: "/users/weather",
     failureRedirect: "/users/login",
     failureFlash: true
   })
 );
 
+
+app.get('/users/weather', checkNotAuthenticated,(req, res)=> {
+  res.render('weather.ejs', { weather: null, error: null});
+  // res.render('weather.ejs', {user: req.user.name})
+})
+
+app.post('/users/weather', function (req, res) {
+  console.log(req.body.city);
+  let city = req.body.city;
+  let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
+
+  request(url, function (err, response, body) {
+    if(err){
+      res.render('weather.ejs', {weather: null, error: 'Error, please try again'});
+    } else {
+      let weather = JSON.parse(body)
+      if(weather.main == undefined){
+        res.render('weather.ejs', {weather: null, error: 'Error, please try again'});
+      } else {
+        let weatherText = `It's ${weather.main.temp}  degrees in ${weather.name}!`;
+        let weatherTextExpanded = `It's ${weather.main.temp} degrees, with
+          ${weather.main.humidity}% humidity in ${weather.name}!`;
+        res.render('weather.ejs', { weather: weatherTextExpanded, error: null});
+      //  res.render('weather.ejs', { user: req.user.name }) ;
+      }
+    }
+  });
+})
+
+
+
+
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
-    return res.redirect("/users/dashboard");
+    return res.redirect("/users/weather");
   }
   next();
 }

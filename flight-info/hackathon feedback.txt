@@ -1,0 +1,9 @@
+Weather APP.
+Register & Login mechanism works, great job!
+When registering a new user and passwords do not match the app refreshes the page with a message.
+When this happends all of the user information is deleted from the form ( Name, email, passwords), maybe
+you could keep the information there or disable the register button until all requierments are met !
+Good Redirect from register to login page.
+The app works and you've demonstrated all of the things learnt in class. The file structure is good and you use .env which is great.
+I would just add one thing: A reason to justify register/login. 
+The app works wonderfully as I said, but is not different than googling the weather. I would add an option to save the cities searched to a "favorites" list , which can be in the database , and when the user logs in , he can see/add/remove from his favorites.

@@ -42,7 +42,7 @@ app.use(passport.session());
 app.use(flash());
 
 app.get("/", (req, res) => {
-  res.render("index");
+  res.render("login.ejs");
 });
 
 app.get("/users/register", checkAuthenticated, (req, res) => {
